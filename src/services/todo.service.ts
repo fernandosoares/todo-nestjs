@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TodoEntity } from 'src/entities/todo.entity';
 import { TodoRepository } from 'src/repositories/todo.repository';
 
@@ -6,23 +6,40 @@ import { TodoRepository } from 'src/repositories/todo.repository';
 export class TodoService {
   constructor(private todoRepository: TodoRepository) {}
 
-  getAll() {
-    return this.todoRepository.getAll();
+  async getAll(): Promise<TodoEntity[]> {
+    return await this.todoRepository.getAll();
   }
 
-  findById(id: string) {
-    return this.todoRepository.getOne(id);
+  async findById(id: string): Promise<TodoEntity> {
+    return await this.checkTodo(id);
   }
 
-  create(todo: TodoEntity) {
-    return this.todoRepository.create(todo);
+  async create(todo: TodoEntity): Promise<TodoEntity> {
+    return await this.todoRepository.create(todo);
   }
 
-  update(id: string, todo: TodoEntity) {
-    return this.todoRepository.update(id, todo);
+  async update(id: string, todo: TodoEntity): Promise<TodoEntity> {
+    if (this.checkTodo(id)) {
+      return await this.todoRepository.update(id, todo);
+    }
   }
 
-  delete(id: string) {
-    return this.todoRepository.delete(id);
+  async delete(id: string): Promise<TodoEntity> {
+    if (this.checkTodo(id)) {
+      return await this.todoRepository.delete(id);
+    }
+  }
+
+  private async checkTodo(id: string): Promise<TodoEntity> {
+    const todo = await this.todoRepository.getOne(id);
+
+    if (!todo) {
+      throw new NotFoundException('TODO NOT FOUND', {
+        cause: new Error(),
+        description: 'No match for the provided ID',
+      });
+    }
+
+    return todo;
   }
 }

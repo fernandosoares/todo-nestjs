@@ -6,11 +6,11 @@ import { TodoEntity } from 'src/entities/todo.entity';
 export class TodoRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getAll() {
+  async getAll(): Promise<TodoEntity[]> {
     return await this.prisma.todo.findMany();
   }
 
-  async getOne(id: string) {
+  async getOne(id: string): Promise<TodoEntity> {
     return await this.prisma.todo.findFirst({
       where: {
         id,
@@ -18,13 +18,13 @@ export class TodoRepository {
     });
   }
 
-  async create(todo: TodoEntity) {
+  async create(todo: TodoEntity): Promise<TodoEntity> {
     return await this.prisma.todo.create({
       data: todo,
     });
   }
 
-  async update(id: string, todo: TodoEntity) {
+  async update(id: string, todo: TodoEntity): Promise<TodoEntity> {
     return await this.prisma.todo.update({
       data: todo,
       where: {
@@ -33,7 +33,7 @@ export class TodoRepository {
     });
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<TodoEntity> {
     return await this.prisma.todo.delete({
       where: {
         id,
