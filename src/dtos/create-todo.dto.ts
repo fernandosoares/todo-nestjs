@@ -1,5 +1,10 @@
+import { IsBoolean, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+
 export class CreateTodoDto {
-  id: string;
+  @IsNotEmpty()
+  @MaxLength(255)
   title: string;
+  @IsBoolean()
+  @IsOptional()
   done?: boolean;
 }
